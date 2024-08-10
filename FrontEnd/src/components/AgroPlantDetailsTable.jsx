@@ -32,7 +32,7 @@ const AgroPlantDetailsTable = () => {
     
         try {
             // Use the cleaned userId in the fetch request
-            const response = await fetch(`http://localhost:8000/api/getDataByUserId/${cleanUserId}`);
+            const response = await fetch(`http://20.63.137.159:8000/api/getDataByUserId/${cleanUserId}`);
             const result = await response.json();
     
             if (response.ok) {
@@ -69,7 +69,7 @@ const AgroPlantDetailsTable = () => {
         formData.append('image', file);
     
         try {
-            const uploadResponse = await fetch('http://localhost:8000/api/uploadImage', {
+            const uploadResponse = await fetch('http://20.63.137.159:8000/api/uploadImage', {
                 method: 'POST',
                 body: formData,
             });
@@ -134,7 +134,7 @@ const AgroPlantDetailsTable = () => {
         };
     
         try {
-            const response = await fetch(`http://localhost:8000/api/storeData`, {
+            const response = await fetch(`http://20.63.137.159:8000/api/storeData`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

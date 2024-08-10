@@ -19,7 +19,7 @@ const SignupForm = () => {
         setError(null);
 
         try {
-            const response = await fetch('http://localhost:8000/api/register', {
+            const response = await fetch('http://20.63.137.159:8000/api/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
