@@ -1,61 +1,68 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useNavigate } from "react-router-dom";
+import Header from './Header'; // Import the Header component
 
 const AgroHome = () => {
     const nav = useNavigate();
+    const aboutSectionRef = useRef(null); // Create a ref to the about section
+
+    const scrollToAboutSection = () => {
+        if (aboutSectionRef.current) {
+            aboutSectionRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
     return (
         <>
             {/* Hero Section */}
             <section className="home-container">
-                <nav className="home-navbar">
-                    <div className="home-logo">AgroPlus</div>
-                    <ul className="home-nav-links">
-                        <li><a href="#">Home</a></li>
-                        <li><a href="#">News & Articles</a></li>
-                        <li><a href="#">About Us</a></li>
-                        <li><a onClick={()=>nav('/register')}>Sign Up</a></li>
-                        <li><a onClick={()=>nav('/login')}>Login</a></li>
-                    </ul>
-                </nav>
+                <Header /> {/* Use the Header component here */}
                 <div className="home-sub_container">
-                    <h1>Fertilizers for the future</h1>
-                    <p>Soils Testing • Crop Cultivation • Agricultural Progress</p>
+                    <h1>Predicting Plant Health for a Sustainable Future</h1>
+                    <p>Leveraging AI-Powered Disease Detection to Safeguard Crops and Boost Agricultural Productivity.</p>
                     <div className="home-container-buttons">
-                        <a href="#" className="home-btn-secondary">GET STARTED</a>
+                        <a onClick={scrollToAboutSection} className="home-btn-secondary">GET STARTED</a>
                     </div>
                 </div>
-            </section>
-
-            {/* Blog Section */}
-            <section className="home-blog">
-                <h2>Popular Articles And Tips</h2>
-                <div className="home-blog-grid">
-                    <div className="home-blog-item">
-                        <img src="images/blog1.jpeg" alt="Connecting with farmers" />
-                        <h3>Connecting with farmers to improve Livelihoods</h3>
-                        <a href="#"><i className="fas fa-arrow-right"></i> Read More</a>
-                    </div>
-                    <div className="home-blog-item">
-                        <img src="images/blog2.jpeg" alt="Environment on Agriculture" />
-                        <h3>The Changing Effects of the Environment on Agriculture</h3>
-                        <a href="#"><i className="fas fa-arrow-right"></i> Read More</a>
-                    </div>
-                    {/* Repeat for all blog items */}
-                </div>
-            </section>
-
-            {/* Services Section */}
-            <section className="home-services">
-                <h2>What We Do</h2>
-                <p>We Are Different From Others To Provide Services</p>
-                <p>We transform Ghana's agricultural sector by combining economic success with environmental protection and social responsibility.</p>
             </section>
 
             {/* About Section */}
-            <section className="home-about">
-                <h2>About AgroPlus</h2>
-                <p>Improve the crop production of Africa</p>
-                <p>AgroPlus is widely recognized as a leading Ghanaian company focused on enhancing the crop production in Africa by providing affordable fertilizers for farmers. We also emphasize sustainable agriculture by conducting soil tests on farms to determine the fertilizer needs specific to each farm.</p>
+            <section ref={aboutSectionRef} className="home-about"> {/* Attach the ref here */}
+                <h2>How to Use Our Website?</h2>
+                <div className="crop-detection-container">
+                    <div className="steps-container">
+                        <div className="step step1">
+                            <div className="step-image">
+                                <img src="images/cut.png" alt="Pulling leaf" />
+                            </div>
+                            <div className="step-text">
+                                <h3>Carefully pull the leaf you found most affected by a disease.</h3>
+                            </div>
+                        </div>
+
+                        <div className="step step2">
+                            <div className="step-text">
+                                <h3>Place the leaf in a bright background and take a clear photo.</h3>
+                            </div>
+                            <div className="step-image">
+                                <img src="images/sun.png" alt="Leaf on bright background" />
+                            </div>
+                        </div>
+
+                        <div className="step step3">
+                            <div className="step-image">
+                                <img src="images/take.png" alt="Upload image" />
+                            </div>
+                            <div className="step-text">
+                                <h3>Upload the image using our 'Check Plant's Disease' feature & Check your Plant's Disease.</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="button-container">
+                        <button onClick={() => nav('/plant-check')} className="check-plant-button">Check the Plant</button>
+                    </div>
+                </div>
             </section>
 
             {/* Footer Section */}
@@ -71,7 +78,7 @@ const AgroHome = () => {
                         </ul>
                     </div>
                     <div className="home-footer-newsletter">
-                        <p>Conact with us for Future</p>
+                        <p>Contact with us for Future</p>
                         <input type="email" placeholder="Enter your email" />
                         <button><i className="fas fa-paper-plane"></i> Enquiry Now</button>
                     </div>

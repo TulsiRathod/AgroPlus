@@ -30,13 +30,7 @@ const uploadDisk = multer({ storage: storage });
 user_route.post('/register', user_controller.registerUser);
 user_route.post('/userLogin', user_controller.userlogin);
 
-// Routes for fetching category data
-user_route.get('/potato', user_controller.getPotatoData);
-user_route.get('/tomato', user_controller.getTomatoData);
-user_route.get('/pepper-bell', user_controller.getPepperBellData);
-
 // New routes for image upload and storing data
 user_route.post('/uploadImage', upload.single('image'), uploadImage);
-user_route.post('/storeData', user_controller.storeData);
 
 module.exports = user_route;

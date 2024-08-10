@@ -175,7 +175,7 @@ const getPepperBellData = async (req, res) => {
 module.exports = {
     registerUser,
     userlogin,
-    storeData,  // New function added
+    storeData,
     getPotatoData,
     getTomatoData,
     getPepperBellData,

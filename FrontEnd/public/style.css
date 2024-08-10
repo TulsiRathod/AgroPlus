@@ -81,7 +81,7 @@ a {
 
 /* About Section */
 .home-about {
-  padding: 60px 20px;
+  padding: 60px 20px 0;
   text-align: center;
 }
 
@@ -163,6 +163,68 @@ a {
   margin-top: 10px;
   color: #004c00;
   font-weight: bold;
+}
+
+.crop-detection-container {
+  background-color: #e2e2e2; /* Similar to the background color of the provided image */
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 800px;
+  margin: 30px auto 100px;
+}
+
+.steps-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #ffffff;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+}
+
+.step-image img {
+  max-width: 150px;
+  border-radius: 8px;
+  margin-right: 10px;
+}
+
+.step-text {
+  flex-grow: 1;
+}
+
+.step h3 {
+  margin: 0 0 5px;
+  font-size: 1.2em;
+}
+
+.step p {
+  margin: 0;
+  font-size: 1em;
+}
+
+.button-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.check-plant-button {
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1em;
+  cursor: pointer;
+}
+
+.check-plant-button:hover {
+  background-color: #45a049;
 }
 
 /* Footer Section */
@@ -712,4 +774,93 @@ h1 {
   color: #555;
   background-color: #fafafa; /* Slightly lighter grey background for values */
   border-radius: 0 8px 8px 0;
+}
+
+.about-hero {
+  background: url('path-to-your-hero-image.jpg') no-repeat center center/cover;
+  color: #fff;
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.about-hero h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+.about-hero p {
+  font-size: 1.2rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* About Content Section */
+.about-content {
+  padding: 0 20px 40px;
+  background: #f9f9f9;
+}
+
+.about-content .container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.about-content h2 {
+  color: #28a745;
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.about-content p {
+  margin-bottom: 20px;
+}
+
+.about-content ul {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 40px;
+}
+
+.about-content ul li {
+  background: #fff;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.about-content ul li strong {
+  color: #28a745;
+}
+
+.about-call-to-action {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.cta-button {
+  background: #28a745;
+  color: #fff;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background 0.3s ease;
+}
+
+.cta-button:hover {
+  background: #218838;
+}
+
+.cta-button-secondary {
+  background: #ddd;
+  color: #333;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background 0.3s ease;
+}
+
+.cta-button-secondary:hover {
+  background: #ccc;
 }

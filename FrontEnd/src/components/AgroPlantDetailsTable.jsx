@@ -1,68 +1,191 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './Header';
-import { useNavigate } from 'react-router-dom'; // Assuming you're using react-router for navigation
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const AgroPlantDetailsTable = () => {
-    const [requests, setRequests] = useState([
-        {
-            id: 1,
-            plantName: 'Potato',
-            imageUrl: 'https://via.placeholder.com/50',
-            requestDate: '2024-08-01',
-        },
-        {
-            id: 2,
-            plantName: 'Tomato',
-            imageUrl: 'https://via.placeholder.com/50',
-            requestDate: '2024-08-02',
-        },
-        {
-            id: 3,
-            plantName: 'Pepper',
-            imageUrl: 'https://via.placeholder.com/50',
-            requestDate: '2024-08-03',
-        },
-    ]);
-
+    const [requests, setRequests] = useState([]);
     const [showModal, setShowModal] = useState(false);
-    const [newPlantName, setNewPlantName] = useState('');
-    const [newPlantImage, setNewPlantImage] = useState(null);
-
+    const [imageUrl, setImageUrl] = useState(''); // State to store the uploaded image URL
+    const [category, setCategory] = useState('');
+    const [predictionData, setPredictionData] = useState({ predictedClass: '', confidence: 0 }); // State to store prediction data
     const navigate = useNavigate();
+    const location = useLocation();
 
-    const handleAddRequest = (e) => {
+    useEffect(() => {
+        const userId = localStorage.getItem('userId');
+        if (!userId) {
+            navigate('/login');
+            return;
+        }
+
+        if (location.state && location.state.category) {
+            const category = location.state.category;
+            setCategory(category);
+            fetchData(userId,category);
+        }
+    }, [location.state?.category, navigate]);
+
+    const fetchData = async (userId, category) => {
+        // Clean the userId by removing any surrounding quotes
+        const cleanUserId = userId.replace(/^"|"$/g, '');
+        console.log(cleanUserId); // Log the cleaned userId to ensure it's correct
+    
+        try {
+            // Use the cleaned userId in the fetch request
+            const response = await fetch(`http://localhost:3000/api/getDataByUserId/${cleanUserId}`);
+            const result = await response.json();
+    
+            if (response.ok) {
+                // Filter the fetched data based on the category
+                const filteredData = result.data.filter(item => item.category === category);
+    
+                const fetchedData = filteredData.map((item, index) => ({
+                    id: index + 1,
+                    imageUrl: item.image_url,
+                    requestDate: item.request_date || new Date().toISOString().split('T')[0],
+                    status: item.status || 'Success',
+                    disease: item.disease, // Add disease field
+                    cure: item.cure,       // Add cure field
+                    details: item.details, // Add details field
+                    category:item.category,
+                }));
+                setRequests(fetchedData);
+                console.log(fetchedData);
+            } else {
+                console.error('Error fetching data:', result.msg);
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+    
+    
+    
+    const handleFileChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+    
+        const formData = new FormData();
+        formData.append('image', file);
+    
+        try {
+            const uploadResponse = await fetch('http://localhost:3000/api/uploadImage', {
+                method: 'POST',
+                body: formData,
+            });
+    
+            const uploadResult = await uploadResponse.json();
+    
+            if (uploadResponse.ok) {
+                const imageUrl = uploadResult.url;
+                setImageUrl(imageUrl); // Assuming the API returns the image URL as 'url'
+                console.log("Image uploaded successfully:", imageUrl);
+    
+                // Now call the external API with the uploaded image URL
+                const predictionResponse = await fetch('http://20.63.137.159:5000/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        vegetable: category.toLowerCase(), // assuming the category is the vegetable type
+                        image_url: imageUrl,
+                    }),
+                });
+    
+                const predictionResult = await predictionResponse.json();
+    
+                if (predictionResponse.ok) {
+                    console.log("Prediction data received:", predictionResult);
+                    // Update the state with predictionResult
+                    setPredictionData({
+                        predictedClass: predictionResult.predicted_class,
+                        confidence: predictionResult.confidence,
+                    });
+                } else {
+                    console.error('Error getting prediction:', predictionResult.message);
+                }
+            } else {
+                console.error('Error uploading image:', uploadResult.msg);
+            }
+        } catch (error) {
+            console.error('Error uploading image or getting prediction:', error);
+        }
+    };
+    
+    const handleAddRequest = async (e) => {
         e.preventDefault();
-
-        const newRequest = {
-            id: requests.length + 1,
-            plantName: newPlantName,
-            imageUrl: URL.createObjectURL(newPlantImage),
-            requestDate: new Date().toISOString().split('T')[0],
+        const userId = localStorage.getItem('userId');
+        if (!imageUrl || !userId || !category) {
+            console.error("Missing data to submit the request.");
+            return;
+        }
+    
+        // Ensure that userId is a string without extra quotes
+        const cleanUserId = userId.replace(/\"/g, '');
+    
+        const data = {
+            user_id: cleanUserId,
+            category: category,
+            image_url: imageUrl,
+            disease: predictionData.predictedClass, // Use predicted class from the prediction API
+            cure: "", // Replace with actual data or logic to determine cure
+            details: `Confidence: ${predictionData.confidence}`, // Include confidence in details
         };
-
-        setRequests([...requests, newRequest]);
-        setShowModal(false);
+    
+        try {
+            const response = await fetch(`http://localhost:3000/api/storeData`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data),
+            });
+    
+            const result = await response.json();
+    
+            if (response.ok) {
+                const newRequest = {
+                    id: requests.length + 1,
+                    imageUrl: result.data.image_url,
+                    requestDate: new Date().toISOString().split('T')[0],
+                    status: 'Pending',
+                    disease: result.data.disease,
+                    cure: result.data.cure,
+                    details: result.data.details,
+                };
+                // Update the state with the new request
+                setRequests([...requests, newRequest]);
+                setShowModal(false);
+            } else {
+                console.error('Error storing data:', result.msg);
+            }
+        } catch (error) {
+            console.error('Error storing data:', error);
+        }
     };
-
-    const handleFileChange = (e) => {
-        setNewPlantImage(e.target.files[0]);
-    };
+    
+    
 
     return (
         <>
             <Header />
             <button className="plant-back-button" onClick={() => navigate(-1)}>← Back</button>
             <div className="plant-request-container">
-                <h1>Plant Request History</h1>
-                <button className="add-request-btn" onClick={() => setShowModal(true)}>+ Add New Request</button>
+                <h1>{category} Request History</h1>
+                <button className="add-request-btn" onClick={() => {
+                    setShowModal(true);
+                    setImageUrl(''); // Reset image URL when opening the modal
+                    setPredictionData({ predictedClass: '', confidence: 0 }); // Reset prediction data
+                }}>+ Add New Request</button>
                 
                 <table className="plant-table">
                     <thead>
                         <tr>
                             <th>Sr. No.</th>
-                            <th>Plant Name</th>
                             <th>Image</th>
                             <th>Request Date</th>
+                            <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -70,10 +193,10 @@ const AgroPlantDetailsTable = () => {
                         {requests.map((request) => (
                             <tr key={request.id}>
                                 <td>{request.id}</td>
-                                <td>{request.plantName}</td>
-                                <td><img src={request.imageUrl} alt={request.plantName} /></td>
+                                <td><img src={request.imageUrl} alt={category} /></td>
                                 <td>{request.requestDate}</td>
-                                <td><button>Check</button></td>
+                                <td>{request.status}</td>
+                                <td><button onClick={()=>navigate('/plant-details',{state:request})}>Check</button></td>
                             </tr>
                         ))}
                     </tbody>
@@ -82,17 +205,8 @@ const AgroPlantDetailsTable = () => {
                 {showModal && (
                     <div className="modal">
                         <div className="modal-content">
-                            <h2>Add New Plant Request</h2>
+                            <h2>Add New {category} Request</h2>
                             <form onSubmit={handleAddRequest}>
-                                <div>
-                                    <label>Plant Name:</label>
-                                    <input 
-                                        type="text" 
-                                        value={newPlantName} 
-                                        onChange={(e) => setNewPlantName(e.target.value)} 
-                                        required 
-                                    />
-                                </div>
                                 <div>
                                     <label>Upload Image:</label>
                                     <input 
@@ -101,6 +215,14 @@ const AgroPlantDetailsTable = () => {
                                         required 
                                     />
                                 </div>
+                                {imageUrl && (
+                                    <div>
+                                        <img src={imageUrl} alt="Uploaded Preview" style={{ width: '400px', height: '400px' }} />
+                                        {predictionData.predictedClass && (
+                                            <p>Prediction: {predictionData.predictedClass} (Confidence: {predictionData.confidence})</p>
+                                        )}
+                                    </div>
+                                )}
                                 <button type="submit">Submit</button>
                                 <button type="button" onClick={() => setShowModal(false)}>Close</button>
                             </form>

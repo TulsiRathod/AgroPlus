@@ -1,5 +1,5 @@
 // File: imageUpload.js
-
+const mongoose = require('mongoose');
 const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
@@ -25,18 +25,27 @@ const upload = multer({ storage: storage });
 
 // Image upload handler function
 const uploadImage = (req, res) => {
-    console.log(req);
-  if (req.file) {
-    return res.json({
-      success: true,
-      url: req.file.path, // The URL of the uploaded image
-    });
+  try {
+      if (req.file) {
+          return res.json({
+              success: true,
+              url: req.file.path,
+          });
+      } else {
+          return res.status(400).json({
+              success: false,
+              message: 'Image upload failed. No file provided.',
+          });
+      }
+  } catch (error) {
+      return res.status(500).json({
+          success: false,
+          message: 'An error occurred during the image upload process.',
+          error: error.message,
+      });
   }
-  return res.status(400).json({
-    success: false,
-    message: 'Image upload failed.',
-  });
 };
+
 
 // Exporting the upload middleware and uploadImage function
 module.exports = {
