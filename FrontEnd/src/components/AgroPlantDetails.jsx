@@ -231,7 +231,7 @@ const getPlantDiseaseDetails = (category, disease) => {
                 }
             },
         },
-        BellPepper: {
+        Pepper: {
             "Bacterial Spot": {
                 cause: "Xanthomonas campestris pv. vesicatoria (a bacteria)",
                 symptoms: "Small, water-soaked spots on leaves, which may enlarge and become dark and scabby.",

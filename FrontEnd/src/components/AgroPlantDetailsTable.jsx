@@ -23,7 +23,7 @@ const AgroPlantDetailsTable = () => {
             setCategory(category);
             fetchData(userId,category);
         }
-    }, [location.state?.category, navigate]);
+    }, [location.state?.category, navigate,requests]);
 
     const fetchData = async (userId, category) => {
         // Clean the userId by removing any surrounding quotes
